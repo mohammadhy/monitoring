@@ -1,0 +1,21 @@
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    rule_files:
+    - "alert.rules"
+    alerting:
+      alertmanagers:
+      - scheme: http
+        static_configs:
+        - targets: ['192.168.1.193:9093']
+    scrape_configs:
+    - job_name: 'docker'
+      static_configs:
+      - targets: ["192.168.1.193:8080"]
+    - job_name: 'flask'
+      static_configs:
+      - targets: ["192.168.1.193:8000"]
+    - job_name: 'Node'
+      static_configs:
+      - targets: ["192.168.1.193:9100"]
+

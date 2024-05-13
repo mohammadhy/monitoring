@@ -1,0 +1,51 @@
+version: "3"
+services:
+  prometheus:
+    container_name: prometheus
+    image: registry.lastsecondtours.com/prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./alert.rules:/etc/prometheus/alert.rules
+  node_exporter:
+    container_name: node_exporter
+    image: registry.lastsecondtours.com/prom/node-exporter
+    volumes:
+     - /:/host:ro
+    ports:
+    - 9100:9100
+  grafana:
+    container_name: grafana
+    image: registry.lastsecondtours.com/grafana/grafana-enterprise
+    ports:
+    - 3000:3000
+    volumes:
+    - ./node_exporter:/var/lib/grafana/dashboards/node-exporter.json
+    - ./automatic.yaml:/etc/grafana/provisioning/dashboards/automatic.yaml
+    - ./cadvisor:/var/lib/grafana/dashboards/cadvisor.json
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor
+    ports:
+    - 8080:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+
+  alertmanager:
+    container_name: alert
+    image: quay.io/prometheus/alertmanager
+    ports:
+    - 9093:9093
+  sqlexporter:
+    container_name: sqlexporter
+    image: docker.arvancloud.ir/prom/mysqld-exporter
+    volumes:
+    - ./.my.cnf:/home/.my.cnf
+    command: ["--config.my-cnf=/home/.my.cnf"]
+    ports:
+    - 9104:9104
+
