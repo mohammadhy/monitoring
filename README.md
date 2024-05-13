@@ -1,1 +1,1 @@
-In .my.cnf put username and password database
+### In .my.cnf put username and password database
